@@ -1,76 +1,60 @@
-import { createContext, useContext, useReducer } from 'react'
-import toast from 'react-hot-toast'
+import { createContext, useContext, useState, useEffect } from 'react'
 
 const CartContext = createContext()
 
-const cartReducer = (state, action) => {
-  switch (action.type) {
-    case 'ADD_TO_CART':
-      const existingItem = state.items.find(item => item.id === action.payload.id)
+export function CartProvider({ children }) {
+  const [cart, setCart] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const savedCart = localStorage.getItem('cart')
+      return savedCart ? JSON.parse(savedCart) : []
+    }
+    return []
+  })
+
+  useEffect(() => {
+    localStorage.setItem('cart', JSON.stringify(cart))
+  }, [cart])
+
+  const addToCart = (product, quantity) => {
+    setCart(currentCart => {
+      const existingItem = currentCart.find(item => item.id === product.id)
+      
       if (existingItem) {
-        return {
-          ...state,
-          items: state.items.map(item =>
-            item.id === action.payload.id
-              ? { ...item, quantity: item.quantity + 1 }
-              : item
-          )
-        }
-      }
-      return {
-        ...state,
-        items: [...state.items, { ...action.payload, quantity: 1 }]
-      }
-    case 'REMOVE_FROM_CART':
-      return {
-        ...state,
-        items: state.items.filter(item => item.id !== action.payload.id)
-      }
-    case 'UPDATE_QUANTITY':
-      return {
-        ...state,
-        items: state.items.map(item =>
-          item.id === action.payload.id
-            ? { ...item, quantity: action.payload.quantity }
+        return currentCart.map(item =>
+          item.id === product.id
+            ? { ...item, quantity: item.quantity + quantity }
             : item
         )
       }
-    case 'CLEAR_CART':
-      return {
-        ...state,
-        items: []
-      }
-    default:
-      return state
-  }
-}
-
-export function CartProvider({ children }) {
-  const [state, dispatch] = useReducer(cartReducer, { items: [] })
-
-  const addToCart = (product) => {
-    dispatch({ type: 'ADD_TO_CART', payload: product })
-    toast.success('Proizvod dodat u korpu!')
+      return [...currentCart, { ...product, quantity }]
+    })
   }
 
-  const removeFromCart = (product) => {
-    dispatch({ type: 'REMOVE_FROM_CART', payload: product })
-    toast.success('Proizvod uklonjen iz korpe')
+  const removeFromCart = (productId) => {
+    setCart(cart.filter(item => item.id !== productId))
   }
 
   const updateQuantity = (productId, quantity) => {
-    dispatch({ type: 'UPDATE_QUANTITY', payload: { id: productId, quantity } })
+    if (quantity === 0) {
+      removeFromCart(productId)
+      return
+    }
+    setCart(cart.map(item =>
+      item.id === productId
+        ? { ...item, quantity }
+        : item
+    ))
   }
 
   const clearCart = () => {
-    dispatch({ type: 'CLEAR_CART' })
+    setCart([])
   }
 
   return (
-    <CartContext.Provider value={{
-      items: state.items,
-      addToCart,
-      removeFromCart,
+    <CartContext.Provider value={{ 
+      cart, 
+      addToCart, 
+      removeFromCart, 
       updateQuantity,
       clearCart
     }}>

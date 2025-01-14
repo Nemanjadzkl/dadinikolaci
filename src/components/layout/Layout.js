@@ -1,6 +1,7 @@
 import Header from './Header'
 import Footer from './Footer'
 import { Toaster } from 'react-hot-toast'
+import PopupBanner from '../common/PopupBanner'
 
 function Layout({ children }) {
   return (
@@ -15,6 +16,7 @@ function Layout({ children }) {
           },
         }}
       />
+      <PopupBanner />
       <Header />
       <main className="flex-grow">
         {children}

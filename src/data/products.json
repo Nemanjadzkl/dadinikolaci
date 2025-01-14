@@ -1,0 +1,78 @@
+{
+  "categories": [
+    "Torte",
+    "Kolači",
+    "Sitni kolači",
+    "Svadbene torte"
+  ],
+  "products": [
+    {
+      "id": "1736760713099",
+      "name": "Test",
+      "description": "Test",
+      "ingredients": "test",
+      "preparation": "",
+      "servingSize": "",
+      "price": 11111,
+      "category": "Torte",
+      "allergens": "testtsr",
+      "storageInfo": "stestst",
+      "isSpecialOffer": false,
+      "images": [
+        "/uploads/1c62230b740d8af8e5e6e8803.png"
+      ],
+      "createdAt": "2025-01-13T09:31:53.099Z"
+    },
+    {
+      "id": "1736764211244",
+      "name": "Mico Bacime",
+      "description": "test",
+      "ingredients": "test",
+      "preparation": "",
+      "servingSize": "",
+      "price": 9000,
+      "category": "Svadbene torte",
+      "allergens": "",
+      "storageInfo": "test",
+      "isSpecialOffer": false,
+      "images": [
+        "/uploads/506e8f100f73dc5474f472c00.jpg"
+      ],
+      "createdAt": "2025-01-13T10:30:11.244Z"
+    },
+    {
+      "id": "1736848732658",
+      "name": "Tortica",
+      "description": "Test",
+      "ingredients": "Test",
+      "preparation": "",
+      "servingSize": "",
+      "price": 2000,
+      "category": "Torte",
+      "allergens": "",
+      "storageInfo": "Test",
+      "isSpecialOffer": false,
+      "images": [
+        "/uploads/a696a85ec45bf527db77e1004.jpg"
+      ],
+      "createdAt": "2025-01-14T09:58:52.658Z"
+    },
+    {
+      "id": "1736848979613",
+      "name": "Test",
+      "description": "test",
+      "ingredients": "test",
+      "preparation": "",
+      "servingSize": "",
+      "price": 123,
+      "category": "Kolači",
+      "allergens": "test",
+      "storageInfo": "test",
+      "isSpecialOffer": false,
+      "images": [
+        "/uploads/a696a85ec45bf527db77e1005.png"
+      ],
+      "createdAt": "2025-01-14T10:02:59.613Z"
+    }
+  ]
+}

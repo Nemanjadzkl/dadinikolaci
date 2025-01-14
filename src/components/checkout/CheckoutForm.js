@@ -1,181 +1,183 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useCart } from '@/context/CartContext'
-import { useRouter } from 'next/router'
+import Confirmation from './Confirmation'
 
-function CheckoutForm({ step, setStep }) {
-  const router = useRouter()
-  const { items, clearCart } = useCart()
+export default function CheckoutForm({ step, setStep }) {
+  const { cart, clearCart } = useCart()
+  const [isClient, setIsClient] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
+    name: '',
     email: '',
     phone: '',
     address: '',
     city: '',
     postalCode: '',
-    notes: '',
-    paymentMethod: 'cash'
+    notes: ''
   })
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    })
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
+  const steps = [
+    { id: 'details', name: 'Detalji' },
+    { id: 'confirmation', name: 'Potvrda' }
+  ]
+
+  if (step === 'confirmation') {
+    return <Confirmation />
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    
-    const order = {
-      ...formData,
-      items: items,
-      total: items.reduce((sum, item) => sum + (item.price * item.quantity), 0) + 300,
-      status: 'pending',
-      createdAt: new Date()
-    }
+    setIsSubmitting(true)
 
     try {
-      const response = await fetch('/api/orders', {
+      const orderData = {
+        orderDetails: {
+          items: cart,
+          total: cart.reduce((sum, item) => sum + (item.price * item.quantity), 0) + 300,
+        },
+        customerEmail: formData.email,
+        customerDetails: formData
+      }
+
+      const response = await fetch('/api/send-order-email', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(order)
+        body: JSON.stringify(orderData)
       })
+
+      const data = await response.json()
 
       if (response.ok) {
         clearCart()
-        router.push('/order-success')
+        setStep('confirmation')
+      } else {
+        console.error('Order submission failed:', data.message)
       }
     } catch (error) {
-      console.error('Error creating order:', error)
+      console.error('Error submitting order:', error)
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Ime
-          </label>
-          <input
-            type="text"
-            name="firstName"
-            value={formData.firstName}
-            onChange={handleChange}
-            required
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-rosegold focus:ring-rosegold"
-          />
+    <div>
+      <div className="mb-8">
+        <div className="flex items-center justify-center">
+          {steps.map((s, index) => (
+            <div key={s.id} className="flex items-center">
+              <div className={`flex items-center justify-center w-8 h-8 rounded-full ${
+                step === s.id ? 'bg-rosegold text-white' : 'bg-gray-200'
+              }`}>
+                {index + 1}
+              </div>
+              {index < steps.length - 1 && (
+                <div className="w-20 h-1 mx-2 bg-gray-200">
+                  <div className={`h-full ${
+                    step === steps[index + 1].id ? 'bg-rosegold' : 'bg-gray-200'
+                  }`} />
+                </div>
+              )}
+            </div>
+          ))}
         </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Prezime
-          </label>
-          <input
-            type="text"
-            name="lastName"
-            value={formData.lastName}
-            onChange={handleChange}
-            required
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-rosegold focus:ring-rosegold"
-          />
-        </div>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700">
-          Email
-        </label>
-        <input
-          type="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-rosegold focus:ring-rosegold"
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700">
-          Telefon
-        </label>
-        <input
-          type="tel"
-          name="phone"
-          value={formData.phone}
-          onChange={handleChange}
-          required
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-rosegold focus:ring-rosegold"
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700">
-          Adresa
-        </label>
-        <input
-          type="text"
-          name="address"
-          value={formData.address}
-          onChange={handleChange}
-          required
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-rosegold focus:ring-rosegold"
-        />
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Grad
-          </label>
-          <input
-            type="text"
-            name="city"
-            value={formData.city}
-            onChange={handleChange}
-            required
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-rosegold focus:ring-rosegold"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Poštanski broj
-          </label>
-          <input
-            type="text"
-            name="postalCode"
-            value={formData.postalCode}
-            onChange={handleChange}
-            required
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-rosegold focus:ring-rosegold"
-          />
+        <div className="flex justify-around mt-2">
+          {steps.map((s) => (
+            <span key={s.id} className="text-sm text-gray-600">
+              {s.name}
+            </span>
+          ))}
         </div>
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700">
-          Napomena
-        </label>
-        <textarea
-          name="notes"
-          value={formData.notes}
-          onChange={handleChange}
-          rows={4}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-rosegold focus:ring-rosegold"
-        />
-      </div>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div>
+          <label className="block mb-2">Ime i Prezime</label>
+          <input
+            type="text"
+            required
+            className="w-full border rounded-lg px-4 py-2"
+            value={formData.name}
+            onChange={e => setFormData({...formData, name: e.target.value})}
+          />
+        </div>
+        <div>
+          <label className="block mb-2">Email</label>
+          <input
+            type="email"
+            required
+            className="w-full border rounded-lg px-4 py-2"
+            value={formData.email}
+            onChange={e => setFormData({...formData, email: e.target.value})}
+          />
+        </div>
+        <div>
+          <label className="block mb-2">Telefon</label>
+          <input
+            type="tel"
+            required
+            className="w-full border rounded-lg px-4 py-2"
+            value={formData.phone}
+            onChange={e => setFormData({...formData, phone: e.target.value})}
+          />
+        </div>
+        <div>
+          <label className="block mb-2">Adresa</label>
+          <input
+            type="text"
+            required
+            className="w-full border rounded-lg px-4 py-2"
+            value={formData.address}
+            onChange={e => setFormData({...formData, address: e.target.value})}
+          />
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block mb-2">Grad</label>
+            <input
+              type="text"
+              required
+              className="w-full border rounded-lg px-4 py-2"
+              value={formData.city}
+              onChange={e => setFormData({...formData, city: e.target.value})}
+            />
+          </div>
+          <div>
+            <label className="block mb-2">Poštanski Broj</label>
+            <input
+              type="text"
+              required
+              className="w-full border rounded-lg px-4 py-2"
+              value={formData.postalCode}
+              onChange={e => setFormData({...formData, postalCode: e.target.value})}
+            />
+          </div>
+        </div>
+        <div>
+          <label className="block mb-2">Napomena</label>
+          <textarea
+            className="w-full border rounded-lg px-4 py-2"
+            rows="4"
+            value={formData.notes}
+            onChange={e => setFormData({...formData, notes: e.target.value})}
+          />
+        </div>
+        <button
+  type="submit"
+  disabled={isSubmitting}
+  className="w-full bg-rosegold text-white py-4 rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50"
+>
+  {isSubmitting ? 'Obrađuje se...' : 'Potvrdi Porudžbinu'}
+</button>
 
-      <button
-        type="submit"
-        className="w-full bg-rosegold text-white py-3 rounded-md hover:bg-opacity-90 transition-colors"
-      >
-        Potvrdi porudžbinu
-      </button>
-    </form>
+
+      </form>
+    </div>
   )
 }
-
-export default CheckoutForm

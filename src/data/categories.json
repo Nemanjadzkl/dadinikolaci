@@ -1,0 +1,26 @@
+{
+  "torte": {
+    "id": "torte",
+    "name": "Torte",
+    "description": "Ukusne torte za sve prilike",
+    "imageUrl": "/images/categories/torte-1736844844692.png"
+  },
+  "kolaci": {
+    "id": "kolaci",
+    "name": "Kolači",
+    "description": "Domaći kolači pravljeni sa ljubavlju",
+    "imageUrl": null
+  },
+  "sitni-kolaci": {
+    "id": "sitni-kolaci",
+    "name": "Sitni Kolači",
+    "description": "Savršeni za proslave i posebne prilike",
+    "imageUrl": null
+  },
+  "svadbene-torte": {
+    "id": "svadbene-torte",
+    "name": "Svadbene Torte",
+    "description": "Elegantne torte za vaš poseban dan",
+    "imageUrl": null
+  }
+}

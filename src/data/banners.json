@@ -1,0 +1,14 @@
+{
+  "banners": [
+    {
+      "id": "1736885737773",
+      "title": "test",
+      "description": "",
+      "link": "",
+      "imageUrl": "/uploads/banners/a774f1de1ae2dcb00d4311501.webp",
+      "isActive": true,
+      "createdAt": "2025-01-14T20:15:37.773Z"
+    }
+  ],
+  "activePromotions": []
+}
