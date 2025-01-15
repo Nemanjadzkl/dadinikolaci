@@ -5,7 +5,7 @@ import CartSummary from '@/components/cart/CartSummary'
 import Link from 'next/link'
 
 function CartPage() {
-  const { items } = useCart()
+  const { items = [] } = useCart() // Initialize with empty array as default
 
   return (
     <Layout>
@@ -40,3 +40,6 @@ function CartPage() {
 }
 
 export default CartPage
+
+// Add this to prevent static pre-rendering issues
+export const dynamic = 'force-dynamic'
