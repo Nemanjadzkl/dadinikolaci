@@ -19,7 +19,7 @@ module.exports = {
           800: '#660000',
           900: '#330000',
         },
-        cream: '#FDF5F3',  // New soft pink-tinted cream color
+        cream: '#FDF5F3',
         brown: {
           light: '#D4B499',
           DEFAULT: '#A47551',
